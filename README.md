@@ -422,7 +422,7 @@ docker compose start uptime-kuma
 
 ### Actualizar a última versión
 
-Uptime Kuma usa versionado semántico. Tag `1` siempre apunta a la última versión 1.x.
+Uptime Kuma usa versionado semántico. Tag `2` siempre apunta a la última versión 2.x.
 
 ```bash
 # Backup previo
