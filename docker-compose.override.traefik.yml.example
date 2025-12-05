@@ -1,0 +1,8 @@
+services:
+  uptime-kuma:
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.uptime-kuma.rule=Host(`${DOMAIN_HOST}`)
+      - traefik.http.routers.uptime-kuma.entrypoints=websecure
+      - traefik.http.routers.uptime-kuma.tls.certresolver=letsencrypt
+      - traefik.http.services.uptime-kuma.loadbalancer.server.port=3001

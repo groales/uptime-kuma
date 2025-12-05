@@ -1,0 +1,18 @@
+# Environment variables
+.env
+
+# Docker override files (copies of examples)
+docker-compose.override.yml
+
+# Uptime Kuma data
+data/
+
+# Backups
+backup/
+*.db
+*.db-shm
+*.db-wal
+
+# OS
+.DS_Store
+Thumbs.db
