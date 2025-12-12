@@ -42,10 +42,9 @@ Uptime Kuma es una herramienta de monitorización self-hosted moderna y elegante
 
    **Para NPM**: No requiere variables
 
-5. En **Advanced mode**, añadir (solo Traefik):
+5. En **Additional paths**, añadir (solo Traefik):
    ```yaml
-   additional_files:
-     - docker-compose.override.traefik.yml.example
+docker-compose.override.traefik.yml.example
    ```
 6. Click en **Deploy the stack**
 
