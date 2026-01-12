@@ -23,54 +23,42 @@ Uptime Kuma es una herramienta de monitorización self-hosted moderna y elegante
 
 ⚠️ **IMPORTANTE**: Este repositorio **NO incluye modo standalone**. Requiere proxy inverso (Traefik o NPM) para funcionar.
 
-## Despliegue con Portainer
+## Archivos de este Repositorio
 
-### Opción A: Git Repository (recomendado)
+Este repositorio contiene archivos de ejemplo:
+- `docker-compose.yml` - Configuración base del contenedor
+- `.env.example` - Plantilla de variables de entorno
+- `docker-compose.override.traefik.yml.example` - Labels para Traefik
+- `README.md` - Esta documentación
 
-1. En Portainer, ir a **Stacks** → **Add stack**
-2. Seleccionar **Repository**
-3. Configurar:
-   - **Repository URL**: `https://git.ictiberia.com/groales/uptime-kuma`
-   - **Repository reference**: `refs/heads/main`
-   - **Compose path**: `docker-compose.yml`
-4. En **Environment variables**, añadir:
-
-   **Para Traefik**:
-   ```env
-   DOMAIN_HOST=uptime.example.com
-   ```
-
-   **Para NPM**: No requiere variables
-
-5. En **Additional paths**, añadir (solo Traefik): `docker-compose.override.traefik.yml.example`
-
-6. Click en **Deploy the stack**
-
-### Opción B: Web Editor
-
-1. En Portainer, ir a **Stacks** → **Add stack**
-2. Nombre: `uptime-kuma`
-3. Selecciona **Web editor**
-4. Pega el contenido de `docker-compose.yml`
-5. En **Environment variables**, añade las mismas variables que la Opción A
-6. Click en **Deploy the stack**
+> 💡 **Tip**: Puedes copiar estos archivos manualmente o clonar el repositorio.
 
 ---
 
-## Despliegue con Docker CLI
+## Despliegue con Docker Compose
 
-Si prefieres trabajar desde la línea de comandos:
+### 1. Crear Directorio y Archivos
 
-### 1. Clonar el repositorio
+```bash
+# Crear directorio
+mkdir uptime-kuma
+cd uptime-kuma
+```
+
+**Opción A: Copiar archivos manualmente** (recomendado)
+
+Copia el contenido de los archivos del repositorio a tu directorio local.
+
+**Opción B: Clonar repositorio**
 
 ```bash
 git clone https://git.ictiberia.com/groales/uptime-kuma.git
 cd uptime-kuma
 ```
 
-### 2. Elegir modo de despliegue
+### 2. Elegir Modo de Despliegue
 
-#### Opción A: Traefik (recomendado para producción)
+**Opción A: Traefik** (con SSL automático)
 
 ```bash
 cp docker-compose.override.traefik.yml.example docker-compose.override.yml
@@ -78,13 +66,14 @@ cp .env.example .env
 nano .env  # Editar: configurar DOMAIN_HOST
 ```
 
-#### Opción B: Nginx Proxy Manager
+**Opción B: Nginx Proxy Manager**
 
 ```bash
 # No requiere .env ni override
+# Configuración manual en NPM después del despliegue
 ```
 
-### 3. Iniciar el servicio
+### 3. Iniciar el Servicio
 
 ```bash
 docker compose up -d
@@ -92,31 +81,40 @@ docker compose up -d
 
 La inicialización tarda **10-20 segundos** (creación de base de datos SQLite).
 
-### 4. Verificar el despliegue
+> 💡 **Tip**: Usa `docker compose logs -f uptime-kuma` para ver el progreso en tiempo real.
+
+### 4. Verificar el Despliegue
 
 ```bash
 # Ver logs en tiempo real
 docker compose logs -f uptime-kuma
 
-# Verificar contenedores activos
+# Verificar estado del contenedor
 docker compose ps
 
 # Ver base de datos creada
 docker compose exec uptime-kuma ls -lh /app/data/
 ```
 
-**Acceso**:
-- Traefik: `https://<DOMAIN_HOST>` (ejemplo: `https://uptime.example.com`)
-- NPM: Configurar en NPM apuntando a `uptime-kuma` puerto `3001`
+### 5. Acceder al Servicio
 
-**Primera configuración**:
-Al acceder por primera vez, Uptime Kuma te pedirá crear una cuenta de administrador.
+**Con Traefik**: Accede directamente a `https://<DOMAIN_HOST>`
+- Ejemplo: `https://uptime.example.com`
+- SSL configurado automáticamente
+
+**Con NPM**: Configura el proxy host en la interfaz de NPM
+- Forward Hostname: `uptime-kuma`
+- Forward Port: `3001`
+- ✅ Activa **Websockets Support** (obligatorio)
+- Configura SSL
+
+> ⚠️ **Primera configuración**: Al acceder por primera vez, crea tu cuenta de administrador.
 
 ---
 
-## Modos de Despliegue
+## Configuración Detallada por Modo
 
-### Traefik (Proxy Inverso con SSL automático)
+### Traefik (SSL automático con Let's Encrypt)
 
 **Requisitos**:
 - Stack de Traefik desplegado
