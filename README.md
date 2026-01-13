@@ -58,6 +58,28 @@ cd uptime-kuma
 
 ### 2. Elegir Modo de Despliegue
 
+El docker-compose.yml base es:
+
+```yaml
+services:
+  uptime-kuma:
+    container_name: uptime-kuma
+    image: louislam/uptime-kuma:2
+    restart: unless-stopped
+    volumes:
+      - uptime-kuma_data:/app/data
+
+volumes:
+  uptime-kuma_data:
+    name: uptime-kuma_data
+
+# añadir estas líneas al final del archivo para proxy inverso 
+networks:
+  default:
+    external: true
+    name: proxy
+```
+
 **Opción A: Traefik** (con SSL automático)
 
 ```bash
