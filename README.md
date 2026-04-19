@@ -26,7 +26,7 @@ Uptime Kuma es una herramienta de monitorización self-hosted moderna y elegante
 ## Archivos de este Repositorio
 
 Este repositorio contiene archivos de ejemplo:
-- `docker-compose.yml` - Configuración base del contenedor
+- `compose.yaml` - Configuración base del contenedor
 - `.env.example` - Plantilla de variables de entorno
 - `docker-compose.override.traefik.yml.example` - Labels para Traefik
 - `README.md` - Esta documentación
@@ -58,7 +58,7 @@ cd uptime-kuma
 
 ### 2. Elegir Modo de Despliegue
 
-El docker-compose.yml base es:
+El compose.yaml base es:
 
 ```yaml
 services:
@@ -83,7 +83,7 @@ networks:
 **Opción A: Traefik** (con SSL automático)
 
 ```bash
-cp docker-compose.override.traefik.yml.example docker-compose.override.yml
+cp docker-compose.override.traefik.yml.example compose.override.yaml
 cp .env.example .env
 nano .env  # Editar: configurar DOMAIN_HOST
 ```
@@ -147,7 +147,7 @@ docker compose exec uptime-kuma ls -lh /app/data/
 
 1. Copiar archivo override:
    ```bash
-   cp docker-compose.override.traefik.yml.example docker-compose.override.yml
+   cp docker-compose.override.traefik.yml.example compose.override.yaml
    ```
 
 2. Configurar `.env`:
@@ -319,7 +319,7 @@ Para monitorizar contenedores Docker:
    - **Container Name**: `netbox`
 3. **Save**
 
-⚠️ **Nota**: Requiere añadir volumen en `docker-compose.yml`:
+⚠️ **Nota**: Requiere añadir volumen en `compose.yaml`:
 ```yaml
 volumes:
   - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -401,11 +401,11 @@ RETENTION_DAYS=30
 mkdir -p $BACKUP_DIR
 
 # Backup
-docker compose -f /path/to/uptime-kuma/docker-compose.yml \
+docker compose -f /path/to/uptime-kuma/compose.yaml \
   exec -T uptime-kuma \
   sqlite3 /app/data/kuma.db ".backup /app/data/kuma-backup.db"
 
-docker compose -f /path/to/uptime-kuma/docker-compose.yml \
+docker compose -f /path/to/uptime-kuma/compose.yaml \
   cp uptime-kuma:/app/data/kuma-backup.db \
   $BACKUP_DIR/kuma-$(date +%Y%m%d-%H%M%S).db
 
@@ -457,7 +457,7 @@ docker compose logs -f uptime-kuma
 
 ### Actualización automática con Watchtower
 
-Añadir en `docker-compose.yml`:
+Añadir en `compose.yaml`:
 
 ```yaml
 services:
