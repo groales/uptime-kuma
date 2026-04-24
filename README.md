@@ -17,18 +17,14 @@ Uptime Kuma es una herramienta de monitorización self-hosted moderna y elegante
 
 - Docker y Docker Compose instalados
 - **Proxy inverso configurado**:
-  - **Traefik** con red `proxy` externa, o
-  - **Nginx Proxy Manager**
 - Dominio con DNS apuntando al servidor
 
-⚠️ **IMPORTANTE**: Este repositorio **NO incluye modo standalone**. Requiere proxy inverso (Traefik o NPM) para funcionar.
 
 ## Archivos de este Repositorio
 
 Este repositorio contiene archivos de ejemplo:
 - `compose.yaml` - Configuración base del contenedor
 - `.env.example` - Plantilla de variables de entorno
-- `docker-compose.override.traefik.yml.example` - Labels para Traefik
 - `README.md` - Esta documentación
 
 > 💡 **Tip**: Puedes copiar estos archivos manualmente o clonar el repositorio.
@@ -80,19 +76,15 @@ networks:
     name: proxy
 ```
 
-**Opción A: Traefik** (con SSL automático)
 
 ```bash
-cp docker-compose.override.traefik.yml.example compose.override.yaml
 cp .env.example .env
 nano .env  # Editar: configurar DOMAIN_HOST
 ```
 
-**Opción B: Nginx Proxy Manager**
 
 ```bash
 # No requiere .env ni override
-# Configuración manual en NPM después del despliegue
 ```
 
 ### 3. Iniciar el Servicio
@@ -120,11 +112,9 @@ docker compose exec uptime-kuma ls -lh /app/data/
 
 ### 5. Acceder al Servicio
 
-**Con Traefik**: Accede directamente a `https://<DOMAIN_HOST>`
 - Ejemplo: `https://uptime.example.com`
 - SSL configurado automáticamente
 
-**Con NPM**: Configura el proxy host en la interfaz de NPM
 - Forward Hostname: `uptime-kuma`
 - Forward Port: `3001`
 - ✅ Activa **Websockets Support** (obligatorio)
@@ -136,10 +126,8 @@ docker compose exec uptime-kuma ls -lh /app/data/
 
 ## Configuración Detallada por Modo
 
-### Traefik (SSL automático con Let's Encrypt)
 
 **Requisitos**:
-- Stack de Traefik desplegado
 - Red `proxy` creada
 - DNS apuntando al servidor
 
@@ -147,7 +135,6 @@ docker compose exec uptime-kuma ls -lh /app/data/
 
 1. Copiar archivo override:
    ```bash
-   cp docker-compose.override.traefik.yml.example compose.override.yaml
    ```
 
 2. Configurar `.env`:
@@ -170,13 +157,10 @@ docker compose exec uptime-kuma ls -lh /app/data/
 
 ---
 
-### Nginx Proxy Manager (NPM)
 
 **Requisitos**:
-- NPM desplegado
 - Ambos servicios en red `proxy`
 
-**Configuración en NPM**:
 
 1. Ir a **Hosts** → **Proxy Hosts** → **Add Proxy Host**
 
@@ -200,9 +184,7 @@ docker compose exec uptime-kuma ls -lh /app/data/
 
 ---
 
-## Comparación: Traefik vs NPM
 
-| Característica | Traefik | Nginx Proxy Manager |
 |---|---|---|
 | **Configuración** | Archivo `.env` | Interfaz web |
 | **SSL** | Automático (Let's Encrypt) | Manual (1 click) |
@@ -492,7 +474,6 @@ docker compose logs uptime-kuma
 
 ### No se puede acceder a la interfaz
 
-**Traefik**:
 ```bash
 # Verificar labels
 docker inspect uptime-kuma | grep -A 10 Labels
@@ -501,7 +482,6 @@ docker inspect uptime-kuma | grep -A 10 Labels
 docker network inspect proxy
 ```
 
-**NPM**:
 - Verificar WebSockets habilitado
 - Verificar Forward Port: `3001`
 
@@ -563,7 +543,6 @@ Uptime Kuma tiene configuración mínima por variables de entorno (la mayoría s
 
 | Variable | Descripción | Ejemplo | Requerida |
 |----------|-------------|---------|-----------|
-| `DOMAIN_HOST` | Dominio para Traefik | `uptime.example.com` | Sí (Traefik) |
 
 **Configuración avanzada** (opcional):
 
