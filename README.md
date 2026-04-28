@@ -1,30 +1,41 @@
-# Uptime Kuma - Monitorizacion de Servicios
+# Uptime Kuma
 
 Uptime Kuma es una herramienta self-hosted para monitorizar disponibilidad de servicios y endpoints desde una interfaz web simple.
 
-## Caracteristicas
+Referencia oficial de instalación: https://github.com/louislam/uptime-kuma/wiki
 
-- Monitorizacion HTTP(s), TCP, Ping, DNS y mas
-- Notificaciones por multiples canales (Telegram, Discord, Email, Webhook, etc.)
-- Paginas de estado publicas (Status Pages)
-- Base de datos SQLite embebida
-- Despliegue rapido con Docker Compose
+## Características
+
+- Monitorización HTTP(S), TCP, Ping y DNS.
+- Notificaciones por múltiples canales.
+- Páginas de estado públicas.
+- Persistencia local con SQLite.
 
 ## Requisitos Previos
 
-- Docker Engine
-- Docker Compose plugin
-- Red Docker externa proxy (si usas proxy inverso)
-- Dominio con DNS apuntando al servidor (si publicas por HTTPS)
+- Docker Engine instalado.
+- Docker Compose instalado.
+- Red Docker externa `proxy` creada si usarás proxy inverso.
 
-## Archivos del Repositorio
+## Archivos de este Repositorio
 
-- compose.yaml: definicion del servicio Uptime Kuma
-- README.md: documentacion de despliegue y operacion
+- `compose.yaml` - Definición del servicio Uptime Kuma.
+- `README.md` - Esta documentación.
 
-Nota: este repo ya no usa archivo .env ni .env.example.
+Nota: este repositorio no usa `.env` ni `.env.example`.
 
-## compose.yaml actual
+---
+
+## Despliegue con Docker Compose
+
+### 1. Clonar el repositorio
+
+```bash
+git clone https://github.com/groales/uptime-kuma.git
+cd uptime-kuma
+```
+
+### 2. Revisar `compose.yaml`
 
 ```yaml
 services:
@@ -35,81 +46,96 @@ services:
     volumes:
       - ./data:/app/data
 
-# anadir estas lineas al final del archivo para proxy inverso
 networks:
   default:
     external: true
     name: proxy
 ```
 
-## Despliegue rapido
-
-1. Clona el repositorio y entra en la carpeta:
-
-```bash
-git clone https://github.com/groales/uptime-kuma.git
-cd uptime-kuma
-```
-
-2. Crea la red proxy si todavia no existe:
+### 3. Levantar el servicio
 
 ```bash
 docker network create proxy
-```
-
-3. Inicia el servicio:
-
-```bash
 docker compose up -d
 ```
 
-4. Verifica estado y logs:
+---
+
+## Método Alternativo: Crear Manualmente
+
+Puedes copiar el `compose.yaml` en una carpeta nueva y ejecutar el mismo despliegue.
+
+---
+
+## Acceso Inicial
+
+- Con proxy inverso: accede al dominio configurado.
+- Con acceso directo temporal: publica puerto `3001` y accede a `http://IP_SERVIDOR:3001`.
+
+En el primer acceso debes crear la cuenta administradora.
+
+## Comandos Útiles
 
 ```bash
 docker compose ps
 docker compose logs -f uptime-kuma
+docker compose restart uptime-kuma
+docker compose pull uptime-kuma
+docker compose up -d uptime-kuma
+docker compose down
 ```
 
-La primera inicializacion suele tardar entre 10 y 20 segundos.
+## Estructura de Volúmenes
 
-## Acceso
+```text
+Bind mount:
+└── ./data -> /app/data
+```
 
-- Si usas proxy inverso: accede a tu dominio, por ejemplo https://uptime.example.com
-- Si haces acceso directo temporal (sin proxy): publica puerto 3001 en compose y accede a http://IP_SERVIDOR:3001
-
-En el primer acceso debes crear la cuenta administradora.
-
-## Configuracion recomendada de proxy inverso
+## Configuración Avanzada
 
 Para Nginx Proxy Manager (o equivalente):
 
-- Forward Hostname/IP: uptime-kuma
-- Forward Port: 3001
-- Websockets Support: habilitado (obligatorio)
-- SSL: certificado valido y Force SSL habilitado
+- Forward Hostname/IP: `uptime-kuma`
+- Forward Port: `3001`
+- WebSockets: habilitado
+- SSL: certificado válido y Force SSL habilitado
 
-## Backup y restauracion
+## Solución de Problemas
 
-Los datos persisten en ./data, incluyendo la base SQLite de Uptime Kuma.
-
-Backup simple:
+Si el contenedor no inicia:
 
 ```bash
-# Desde la carpeta del proyecto
-mkdir -p backup
-tar -czf backup/uptime-kuma-data-$(date +%Y%m%d-%H%M%S).tar.gz data
+docker compose logs --tail 200 uptime-kuma
 ```
 
-Restauracion:
+Si no carga por dominio:
+
+- Verifica DNS.
+- Verifica que el proxy enruta a `uptime-kuma:3001`.
+- Verifica WebSockets habilitado.
+
+## Seguridad
+
+- Usa HTTPS si expones el servicio.
+- Restringe acceso al panel con firewall/VPN si aplica.
+- Usa contraseña fuerte para la cuenta administradora.
+
+## Backup y Restauración
 
 ```bash
+# Backup
+mkdir -p backup
+tar -czf backup/uptime-kuma-data-$(date +%Y%m%d-%H%M%S).tar.gz data
+
+# Restauración
 docker compose down
 rm -rf data
 tar -xzf backup/uptime-kuma-data-FECHA.tar.gz
 docker compose up -d
 ```
 
-## Actualizacion
+## Actualización
 
 ```bash
 docker compose pull uptime-kuma
@@ -117,35 +143,12 @@ docker compose up -d uptime-kuma
 docker compose logs -f uptime-kuma
 ```
 
-## Solucion de Problemas
-
-Contenedor no inicia:
-
-```bash
-docker compose logs --tail 200 uptime-kuma
-```
-
-No carga por dominio:
-
-- Verifica DNS
-- Verifica que el proxy enruta a uptime-kuma:3001
-- Verifica que WebSockets este habilitado
-
-Permisos en data:
-
-- Asegura permisos de lectura/escritura en la carpeta data del host
-
-## Variables de entorno
-
-No hay variables de entorno requeridas en la configuracion actual del repositorio.
-
 ## Recursos
 
-- Documentacion oficial del proyecto: https://github.com/louislam/uptime-kuma/wiki
+- Documentación oficial: https://github.com/louislam/uptime-kuma/wiki
 - Docker Hub: https://hub.docker.com/r/louislam/uptime-kuma
 - Issues oficiales: https://github.com/louislam/uptime-kuma/issues
 
 ## Licencia
 
-Este repositorio de configuracion: MIT
-Uptime Kuma: MIT License
+Este repositorio de configuración es de uso libre. Uptime Kuma se distribuye bajo licencia MIT.
