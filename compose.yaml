@@ -3,8 +3,24 @@ services:
     container_name: uptime-kuma
     image: louislam/uptime-kuma:2
     restart: unless-stopped
+    ports:
+      - "3001:3001"  # This maps the container port "3001" to the host port "3001"
     volumes:
-      - ./data:/app/data
+      - ./data:/app/data  # Configuring persistent storage
+    environment:
+      - TZ=UTC  # Set the timezone
+      - UMASK=0022  # Set your file permissions manually
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001"]
+      interval: 30s
+      retries: 3
+      start_period: 10s
+      timeout: 5s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 # añadir estas líneas al final del archivo para proxy inverso 
 networks:

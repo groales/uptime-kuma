@@ -43,8 +43,24 @@ services:
     container_name: uptime-kuma
     image: louislam/uptime-kuma:2
     restart: unless-stopped
+    ports:
+      - "3001:3001"
     volumes:
       - ./data:/app/data
+    environment:
+      - TZ=UTC
+      - UMASK=0022
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001"]
+      interval: 30s
+      retries: 3
+      start_period: 10s
+      timeout: 5s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 networks:
   default:
